@@ -1,9 +1,12 @@
 from datetime import timedelta, datetime
 from flask import Flask, render_template, request, url_for, redirect, flash, session
 from flask_mysqldb import MySQL
+import io
 from helper_functions import updated_date, format_time_from_UI, login_required, Pagination
 from pytz import utc
 from uuid import uuid4
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
 from werkzeug.security import generate_password_hash, check_password_hash
 import yaml
 
@@ -653,6 +656,98 @@ def transactions():
     cursor.close()
 
     return render_template('transactions.html', transactions=transactions, search_query=search_query, page=page, total_pages=total_pages)
+
+# @app.route('/transactions/export', methods=['GET'])
+# def export_transactions():
+#     search_query = request.args.get('search', '')
+
+#     # Fetch transactions from the database
+#     cursor = mysql.connection.cursor()
+#     query = '''
+#     SELECT t.id, p.product_name, t.price, t.quantity, s.supplier_name, t.created_at
+#     FROM transactions t
+#     JOIN products p ON t.product_id = p.id
+#     JOIN suppliers s ON t.supplier_id = s.id
+#     WHERE p.product_name LIKE %s
+#     '''
+#     cursor.execute(query, ('%' + search_query + '%',))
+#     transactions = cursor.fetchall()
+#     cursor.close()
+
+#     # Create a PDF in memory
+#     buffer = io.BytesIO()
+#     pdf = canvas.Canvas(buffer, pagesize=letter)
+#     pdf.setTitle("Transactions")
+
+#     # Add a title
+#     pdf.setFont("Helvetica", 16)
+#     pdf.drawString(200, 750, "Transactions Report")
+
+#     # Add table headers
+#     pdf.setFont("Helvetica", 12)
+#     headers = ["#", "Product Name", "Price", "Quantity", "Supplier Name", "Date"]
+#     x_offset = 50
+#     y_offset = 700
+#     for i, header in enumerate(headers):
+#         pdf.drawString(x_offset + i * 100, y_offset, header)
+
+#     # Add table rows
+#     y_offset -= 20
+#     for idx, transaction in enumerate(transactions):
+#         pdf.drawString(x_offset, y_offset, str(idx + 1))
+#         for i, item in enumerate(transaction[1:], start=1):
+#             pdf.drawString(x_offset + i * 100, y_offset, str(item))
+#         y_offset -= 20
+
+#     pdf.save()
+#     buffer.seek(0)
+
+#     return send_file(buffer, as_attachment=True, download_name="transactions_report.pdf", mimetype='application/pdf')
+@app.route('/transactions/export', methods=['GET'])
+def export_transactions():
+    search_query = request.args.get('search', '')
+
+    # Fetch transactions from the database
+    cursor = mysql.connection.cursor()
+    query = '''
+    SELECT t.id, t.product_name, t.price, t.quantity, s.supplier_name, t.created_at
+    FROM transactions t
+    JOIN suppliers s ON t.supplier_name_id = s.id
+    WHERE p.product_name LIKE %s
+    '''
+    cursor.execute(query, ('%' + search_query + '%',))
+    transactions = cursor.fetchall()
+    cursor.close()
+
+    # Create a PDF in memory
+    buffer = io.BytesIO()
+    pdf = canvas.Canvas(buffer, pagesize=letter)
+    pdf.setTitle("Transactions")
+
+    # Add a title
+    pdf.setFont("Helvetica", 16)
+    pdf.drawString(200, 750, "Transactions Report")
+
+    # Add table headers
+    pdf.setFont("Helvetica", 12)
+    headers = ["#", "Product Name", "Price", "Quantity", "Supplier Name", "Date"]
+    x_offset = 50
+    y_offset = 700
+    for i, header in enumerate(headers):
+        pdf.drawString(x_offset + i * 100, y_offset, header)
+
+    # Add table rows
+    y_offset -= 20
+    for idx, transaction in enumerate(transactions):
+        pdf.drawString(x_offset, y_offset, str(idx + 1))
+        for i, item in enumerate(transaction[1:], start=1):
+            pdf.drawString(x_offset + i * 100, y_offset, str(item))
+        y_offset -= 20
+
+    pdf.save()
+    buffer.seek(0)
+
+    return send_file(buffer, as_attachment=True, download_name="transactions_report.pdf", mimetype='application/pdf')
 
 
 if __name__ == '__main__':

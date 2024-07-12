@@ -6,10 +6,10 @@
     <h1>Transactions Page</h1>
     <hr />
 
-    <form method="GET" action="/transactions">
+    <form>
         <input type="text" name="search" placeholder="Search transactions" value="{{ search_query }}">
         <input type="submit" value="Search">
-        <!-- <a href="{{ url_for('export_transactions', search=search_query) }}" class="btn btn-primary">Export to PDF</a> -->
+        <a href="{{ url_for('export_transactions', search=search_query) }}" class="btn btn-primary">Export to PDF</a>
     </form>
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
