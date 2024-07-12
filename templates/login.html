@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+    <h1>Login Page...</h1>
+    <hr />
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    <hr />
+    <form action="/login", method="POST">
+        <label for="Email">Email</label>:&nbsp;&nbsp;</label><input type="email" name="email" id="Email" placeholder="enter your email">
+        <br><br>
+        <label for="Pass">Password</label>:&nbsp;&nbsp;</label><input type="password" name="pass" id="Pass" placeholder="enter your password">
+        <br><br>
+        <input type="submit" value="Login" style="background-color: dodgerblue">
+    </form>
+{% endblock content %}

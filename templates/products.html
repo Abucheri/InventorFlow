@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block title %}Products{% endblock %}
+
+{% block content %}
+    <h1>Products Page...</h1>
+    <hr />
+    <form method="POST" action="/add_products">
+        Product Name: <input type="text" name="p_name" placeholder="Enter product name">
+        <br><br>
+        Category: 
+          <select name="p_category">
+            <option value="">---</option>
+            {% for category in categories %}
+                <option value="{{ category[0] }}">{{ category[1] }}</option>
+            {% endfor %}
+          </select>
+          <br><br>
+          Unit: 
+          <select name="p_unit">
+            <option value="">---</option>
+            {% for unit in units %}
+                <option value="{{ unit[0] }}">{{ unit[1] }}</option>
+            {% endfor %}
+          </select>
+        <br><br>
+        Description: <textarea name="p_desc" rows=3></textarea>
+        <br><br>
+        Price: <input type="number" name="p_price" placeholder="Enter price">
+        <br><br>
+        Quantity: <input type="number" name="p_quantity" placeholder="Enter quantity">
+        <br><br>
+        Supplier: 
+          <select name="p_supplier">
+            <option value="">---</option>
+            {% for supplier in suppliers %}
+                <option value="{{ supplier[0] }}">{{ supplier[1] }}</option>
+            {% endfor %}
+          </select>
+        <br><br>
+        Date: <input type="datetime-local" name="p_date">
+        <br><br>
+        <input type="submit" value="Save">
+    </form>
+
+    <h1>Products will bw displayed here...</h1>
+    <hr>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class="flashes">
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+    <hr />
+    <form method="GET" action="{{ url_for('products') }}">
+        <input type="text" name="search" placeholder="Search for products" value="{{ search_query }}">
+        <input type="submit" value="Search">
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Unit</th>
+                <th>Description</th>
+                <th>Price per Unit</th>
+                <th>Quantity</th>
+                <th>Supplier</th>
+                <th>Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+            <tr>
+                <td>{{ loop.index + (page - 1) * 10 }}</td>
+                <td>{{ product[1] }}</td>
+                <td>{{ product[2] }}</td>
+                <td>{{ product[3] }}</td>
+                <td>{{ product[4] }}</td>
+                <td>{{ product[5] }}</td>
+                <td>{{ product[6] }}</td>
+                <td>{{ product[7] }}</td>
+                <td>{{ product[8] }}</td>
+                <td>
+                    <button onclick="location.href='/edit_products/{{ product[0] }}'">Edit</button>
+                    <button onclick="if(confirm('Are you sure you want to delete this product?')) location.href='/delete_product/{{ product[0] }}'">Delete</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="pagination">
+        {% if page > 1 %}
+            <a href="{{ url_for('products', page=page-1) }}{% if search_query %}&search={{ search_query }}{% endif %}">&laquo; Previous</a>
+        {% endif %}
+        {% for p in range(1, total_pages + 1) %}
+            {% if p == page %}
+                <strong>{{ p }}</strong>
+            {% else %}
+                <a href="{{ url_for('products', page=p) }}{% if search_query %}&search={{ search_query }}{% endif %}">{{ p }}</a>
+            {% endif %}
+        {% endfor %}
+        {% if page < total_pages %}
+            <a href="{{ url_for('products', page=page+1) }}{% if search_query %}&search={{ search_query }}{% endif %}">Next &raquo;</a>
+        {% endif %}
+    </div>
+{% endblock content %}

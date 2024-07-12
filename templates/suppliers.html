@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}Suppliers{% endblock %}
+
+{% block content %}
+    <h1>Suppliers Page...</h1>
+    <hr />
+    <form method='POST' action='/add_suppliers'>
+        Supplier Name: <input type='text' name='supplier_name' placeholder='Supplier Name'>
+        <br><br>
+        Supplier Contact: <input type='text' name='supplier_contact' placeholder='Supplier contact'>
+        <br><br>
+        Supplier Agreement: <textarea name="supplier_agreement" rows="3"></textarea>
+        <br><br>
+        Date: <input type='datetime-local' name='supplier_date'>
+        <br><br>
+        <input type="submit" value="Save">
+    </form>
+
+    <h1>Display Suppliers here</h1>
+    <form method="GET" action="{{ url_for('suppliers') }}">
+        <input type="text" name="search" placeholder="Search suppliers" value="{{ request.args.get('search', '') }}">
+        <input type="submit" value="Search">
+    </form>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class="flashes">
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Supplier</th>
+                <th>Contact</th>
+                <th>Supplier Agreement</th>
+                <th>Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for supplier in suppliers.items %}
+            <tr>
+                <td>{{ loop.index + (suppliers.page - 1) * suppliers.per_page }}</td>
+                <td>{{ supplier[1] }}</td>
+                <td>{{ supplier[2] }}</td>
+                <td>{{ supplier[3] }}</td>
+                <td>{{ supplier[4] }}</td>
+                <td>
+                    <button onclick="location.href='/edit_suppliers/{{ supplier[0] }}'">Edit</button>
+                    <button onclick="location.href='/delete_suppliers/{{ supplier[0] }}'">Delete</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div>
+        {% if suppliers.has_prev %}
+            <a href="{{ url_for('suppliers', page=suppliers.prev_num, search=request.args.get('search')) }}">Previous</a>
+        {% endif %}
+        <span>Page {{ suppliers.page }} of {{ suppliers.pages }}</span>
+        {% if suppliers.has_next %}
+            <a href="{{ url_for('suppliers', page=suppliers.next_num, search=request.args.get('search')) }}">Next</a>
+        {% endif %}
+    </div>
+{% endblock content %}

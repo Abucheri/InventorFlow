@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Categories{% endblock %}
+
+{% block content %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    <h1>Edit Category</h1>
+    <form method='POST' action=''>
+        Category Name: <input type='text' name='category_name' value="{{ category[1] }}" required>
+        <br><br>
+        <input type="submit" value="Save">
+    </form>
+{% endblock content %}

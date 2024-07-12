@@ -1,0 +1,92 @@
+def products_update(self, id, name=None, category=None, description=None, price=None, quantity=None, unit=None, supplier=None):
+    """Update product"""
+    sql = "UPDATE products SET "
+    params = []
+
+    if name:
+        sql += "product_name = %s, "
+        params.append(name)
+    if category:
+        sql += "product_category = %s, "
+        params.append(category)
+    if description:
+        sql += "description = %s, "
+        params.append(description)
+    if price is not None:  # Check if price is not None since it's a float
+        sql += "price = %.2f, "
+        params.append(price)
+    if quantity is not None:  # Check if quantity is not None since it's an integer
+        sql += "quantity = %d, "
+        params.append(quantity)
+    if unit:
+        sql += "unit = %s, "
+        params.append(unit)
+    if supplier:
+        sql += "supplier_name = %s, "
+        params.append(supplier)
+
+    # Remove the trailing comma and space
+    sql = sql.rstrip(', ')
+    sql += " WHERE id = %s"
+    params.append(id)
+    
+    try:
+        self.cursor.execute(sql, tuple(params))
+        self.conn.commit()
+        print(self.cursor.rowcount, "record(s) updated.")
+    except mysql.connector.Error as e:
+        print(e)
+        self.conn.rollback()
+    finally:
+        self.cursor.close()
+        self.conn.close()
+
+
+Explanation:
+
+    SQL Construction: The SQL query (sql) is dynamically constructed based on which parameters (name, category, description, etc.) are provided. If a parameter is provided (name, category, etc.), it adds that specific field to the SQL query.
+
+    Handling None Values: For fields like price and quantity, explicitly check if they are None before adding them to params and constructing the SQL query. This ensures that you can update these fields to NULL in the database if needed.
+
+    Fallback for All Fields: If no specific fields (name, category, etc.) are provided, the constructed sql statement remains empty after the initial UPDATE products SET . This means that all fields in the row will be updated with the values passed in params.
+
+Using with Flask
+
+When using this method with Flask and receiving data from an HTML form, you can pass the form data directly to the products_update method. Here’s a simplified example:
+
+python
+
+from flask import Flask, request
+
+app = Flask(__name__)
+
+@app.route('/update_product', methods=['POST'])
+def update_product():
+    id = request.form['id']
+    name = request.form['name']
+    category = request.form['category']
+    description = request.form['description']
+    price = float(request.form['price'])  # Convert to float if necessary
+    quantity = int(request.form['quantity'])  # Convert to int if necessary
+    unit = request.form['unit']
+    supplier = request.form['supplier']
+
+    # Initialize DBConnection and call products_update
+    update_product = DBConnection()
+    update_product.products_update(id=id, name=name, category=category, description=description,
+                                   price=price, quantity=quantity, unit=unit, supplier=supplier)
+
+    return 'Product updated successfully'
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
+Explanation for Flask Integration:
+
+    Flask Route and Form Handling: In the /update_product route, Flask handles a POST request containing form data (request.form). Each field from the HTML form (id, name, category, etc.) is accessed using request.form['fieldname'].
+
+    DBConnection Initialization: Initialize DBConnection and call products_update with named arguments (id=id, name=name, etc.). This ensures that the method updates the corresponding fields based on the form data received.
+
+    Data Type Conversion: Convert form data to appropriate types (float for price, int for quantity) before passing them to products_update.
+
+By following these adjustments and integrating with Flask, your products_update method will handle updates based on the specific fields provided in the form, or update all fields if no specific fields are provided, providing flexibility in your application's update logic.

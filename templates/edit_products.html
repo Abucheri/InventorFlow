@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Products{% endblock %}
+
+{% block content %}
+    <h1>Edit Products</h1>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class="flashes">
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+    <form method="POST">
+        Product Name: <input type="text" name="p_name" placeholder="Enter product name" value="{{ product[1] }}">
+        <br><br>
+        Category: 
+        <select name="p_category">
+            <option value="">---</option>
+            {% for category in categories %}
+                <option value="{{ category[0] }}" {% if category[0] == product[2] %}selected{% endif %}>{{ category[1] }}</option>
+            {% endfor %}
+        </select>
+        <br><br>
+        Unit: 
+        <select name="p_unit">
+            <option value="">---</option>
+            {% for unit in units %}
+                <option value="{{ unit[0] }}" {% if unit[0] == product[3] %}selected{% endif %}>{{ unit[1] }}</option>
+            {% endfor %}
+        </select>
+        <br><br>
+        Description: <textarea name="p_desc" rows=3>{{ product[4] }}</textarea>
+        <br><br>
+        Price: <input type="number" name="p_price" placeholder="Enter price" value="{{ product[5] }}">
+        <br><br>
+        Quantity: <input type="number" name="p_quantity" placeholder="Enter quantity" value="{{ product[6] }}">
+        <br><br>
+        Supplier: 
+        <select name="p_supplier">
+            <option value="">---</option>
+            {% for supplier in suppliers %}
+                <option value="{{ supplier[0] }}" {% if supplier[0] == product[7] %}selected{% endif %}>{{ supplier[1] }}</option>
+            {% endfor %}
+        </select>
+        <br><br>
+        <input type="submit" value="Save">
+    </form>
+{% endblock content %}

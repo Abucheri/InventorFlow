@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block title %}Categories{% endblock %}
+
+{% block content %}
+    <h1>Categories Page...</h1>
+    <hr />
+    <h1>Add category here...</h1>
+    <form method='POST' action='/add_categories'>
+        Category Name: <input type='text' name='category_name', placeholder='Category Name'>
+        <br><br>
+        <input type="submit" value="Save">
+    </form>
+
+    <h1>Display categories here</h1>
+    <form method="GET" action="{{ url_for('categories') }}">
+        <input type="text" name="search" placeholder="Search categories" value="{{ request.args.get('search', '') }}">
+        <input type="submit" value="Search">
+    </form>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Category Name</th>
+                {% if session['role'] == 'admin' %}
+                    <th>Actions</th>
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for category in categories.items %}
+                <tr>
+                    <td>{{ loop.index + (categories.page - 1) * categories.per_page }}</td>
+                    <td>{{ category[1] }}</td>
+                    {% if session['role'] == 'admin' %}
+                        <td>
+                            <button onclick="location.href='/edit_category/{{ category[0] }}'">Edit</button>
+                            <button onclick="location.href='/delete_category/{{ category[0] }}'">Delete</button>
+                        </td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div>
+        {% if categories.has_prev %}
+            <a href="{{ url_for('categories', page=categories.prev_num, search=request.args.get('search')) }}">Previous</a>
+        {% endif %}
+        <span>Page {{ categories.page }} of {{ categories.pages }}</span>
+        {% if categories.has_next %}
+            <a href="{{ url_for('categories', page=categories.next_num, search=request.args.get('search')) }}">Next</a>
+        {% endif %}
+    </div>
+{% endblock content %}

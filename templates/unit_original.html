@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}Units{% endblock %}
+
+{% block content %}
+    <h1>Units Page...</h1>
+    <hr />
+    <h1>Add Units here...</h1>
+    <form method='POST' action='/add_units'>
+        Unit Name: <input type='text' name='unit_name', placeholder='Unit Name'>
+        <br><br>
+        <input type="submit" value="Save">
+    </form>
+
+    <h1>Display Units here</h1>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class="flashes">
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Unit Name</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for unit in units %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ unit[1] }}</td>
+                <td>
+                    <button onclick="location.href='/edit_unit/{{ unit[0] }}'">Edit</button>
+                    <button onclick="location.href='/delete_unit/{{ unit[0] }}'">Delete</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock content %}

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>
+        {% block title %}
+            {% if title %}
+                {{ title }} - InventorFlow
+            {% else %}
+                Home - InventorFlow
+            {% endif %}
+        {% endblock %}
+    </title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script type="text/javascript" src="{{ url_for('static', filename='chart.js') }}"></script>
+</head>
+<body>
+    <ul>
+        <li><a href="{{ url_for('home') }}">Home</a></li>
+        <li><a href="{{ url_for('products') }}">Products</a></li>
+        <li><a href="{{ url_for('categories') }}">Categories</a></li>
+        <li><a href="{{ url_for('units') }}">Units</a></li>
+        <li><a href="{{ url_for('suppliers') }}">Suppliers</a></li>
+        <li><a href="{{ url_for('transactions') }}">Transactions</a></li>
+        {% if 'user_id' not in session %}
+            <li><a href="{{ url_for('register') }}">Register</a></li>
+            <li><a href="{{ url_for('login') }}">Login</a></li>
+        {% else %}
+            <li><a href="{{ url_for('logout') }}">Logout</a></li>
+        {% endif %}
+    </ul>
+    {% block content %}{% endblock content %}
+</body>
+</html>

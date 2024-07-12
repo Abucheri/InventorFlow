@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}Categories{% endblock %}
+
+{% block content %}
+    <h1>Categories Page...</h1>
+    <hr />
+    <h1>Add category here...</h1>
+    <form method='POST' action='/add_categories'>
+        Category Name: <input type='text' name='category_name', placeholder='Category Name'>
+        <br><br>
+        <input type="submit" value="Save">
+    </form>
+
+    <h1>Display categories here</h1>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Category Name</th>
+                {% if session['role'] == 'admin' %}
+                    <th>Actions</th>
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for category in categories %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ category[1] }}</td>
+                {% if session['role'] == 'admin' %}
+                    <td>
+                        <button onclick="location.href='/edit_category/{{ category[0] }}'">Edit</button>
+                        <button onclick="location.href='/delete_category/{{ category[0] }}'">Delete</button>
+                    </td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock content %}

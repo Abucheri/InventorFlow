@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Supplier{% endblock %}
+
+{% block content %}
+    <h1>Edit Supplier</h1>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class="flashes">
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+    <form method="POST">
+        <label for="supplier_name">Supplier Name:</label>
+        <input type="text" id="supplier_name" name="supplier_name" value="{{ supplier[1] }}">
+        <br><br>
+        <label for="supplier_contact">Supplier Contact:</label>
+        <input type="text" id="supplier_contact" name="supplier_contact" value="{{ supplier[2] }}">
+        <br><br>
+        <label for="supplier_agreement">Supplier Agreement:</label>
+        <textarea id="supplier_agreement" name="supplier_agreement" rows=3>{{ supplier[3] }}</textarea>
+        <br><br>
+        <input type="submit" value="Save">
+    </form>
+{% endblock content %}

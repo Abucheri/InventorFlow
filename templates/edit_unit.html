@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Unit{% endblock %}
+
+{% block content %}
+    <h1>Edit Unit</h1>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class="flashes">
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+    <form method="POST">
+        <label for="unit_name">Unit Name:</label>
+        <input type="text" id="unit_name" name="unit_name" value="{{ unit[1] }}">
+        <br><br>
+        <input type="submit" value="Save">
+    </form>
+{% endblock content %}

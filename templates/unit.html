@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %}Units{% endblock %}
+
+{% block content %}
+    <h1>Units Page...</h1>
+    <hr />
+    <h1>Add Units here...</h1>
+    <form method='POST' action='/add_units'>
+        Unit Name: <input type='text' name='unit_name' placeholder='Unit Name'>
+        <br><br>
+        <input type="submit" value="Save">
+    </form>
+
+    <h1>Display Units here</h1>
+    <form method="GET" action="{{ url_for('units') }}">
+        <input type="text" name="search" placeholder="Search units" value="{{ request.args.get('search', '') }}">
+        <input type="submit" value="Search">
+    </form>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class="flashes">
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Unit Name</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for unit in units.items %}
+            <tr>
+                <td>{{ loop.index + (units.page - 1) * units.per_page }}</td>
+                <td>{{ unit[1] }}</td>
+                <td>
+                    <button onclick="location.href='/edit_unit/{{ unit[0] }}'">Edit</button>
+                    <button onclick="location.href='/delete_unit/{{ unit[0] }}'">Delete</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div>
+        {% if units.has_prev %}
+            <a href="{{ url_for('units', page=units.prev_num, search=request.args.get('search')) }}">Previous</a>
+        {% endif %}
+        <span>Page {{ units.page }} of {{ units.pages }}</span>
+        {% if units.has_next %}
+            <a href="{{ url_for('units', page=units.next_num, search=request.args.get('search')) }}">Next</a>
+        {% endif %}
+    </div>
+{% endblock content %}
